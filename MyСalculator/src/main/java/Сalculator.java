@@ -4,8 +4,7 @@ public class Сalculator {
         String inputString = file.getInputString();
         if(inputString.length() > 0){
             Calculation check = new Calculation();
-            check.calc();
-           // System.out.print(inputString);
+            check.calc("5+9-16*2/4");
         }
 
     }

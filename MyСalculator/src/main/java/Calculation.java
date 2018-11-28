@@ -2,97 +2,129 @@ import java.util.*;
 
 public class Calculation {
 
-
-    public void calc(){
-//    String[] ss2 = {"1","2","32","4","5"};
-//    String[] s3 = {"+","-","*","/"};
-//    Map<String, String> states = new HashMap<String, String>();
-//    int count = 0;
-//    for(int j = 0; j < s3.length; j++){
-//        for(int i = 0; i < ss2.length; i++){
-//            count++;
-//            if(count<=2){
-//
-//            }
-//
-//        }
-//    }
-    String s = "1+2-32*4/5";
-    String[] arr = s.split("\\s*(\\+|\\-|\\/|\\*)\\s*");
-    char[] ch = s.toCharArray();
-    int indM = s.indexOf("*");
-    int indS = s.indexOf("/");
-    System.out.print(s.charAt(5));
-    Double resOne;
-    String nS;
-    if(indM != -1 && indS != -1){
-        String first = Character.toString(ch[--indM]);
-        String second = Character.toString(ch[2+indM]);
-        if(indM < indS){
-            Double firstV = Double.parseDouble(first);
-            Double secondV = Double.parseDouble(second);
-            resOne = multiply(firstV,secondV);
-            nS = s.replace(first+"*"+second,Double.toString(resOne));
-            getPrevVal(s,indM);
-            //System.out.println(nS);
-            //System.out.println(resOne);
-        }else {
-            Double firstV = Double.parseDouble(first);
-            Double secondV = Double.parseDouble(second);
-            resOne = split(firstV,secondV);
-            nS = s.replace(first+"/"+second,Double.toString(resOne));
-            System.out.println(nS);
-            System.out.print(resOne);
+    public void calc(String str){
+        String string = str;
+        int indMultiply = string.indexOf("*");
+        int indSplit = string.indexOf("/");
+        int indSum = string.indexOf("+");
+        int indSubtract = string.indexOf("-");
+        if(indMultiply != -1 && indSplit != -1){
+            if(indMultiply < indSplit){
+                calc(multiply(string, indMultiply,"*"));
+            }else {
+                calc(split(string, indSplit,"/"));
+            }
+        }else if(indMultiply != -1){
+            calc(multiply(string, indMultiply,"*"));
+        }else if(indSplit != -1){
+            calc(split(string, indSplit,"/"));
+        }else{
+            if(indSum != -1 && indSubtract != -1){
+                if(indSum < indSubtract){
+                    calc(sum(string, indSum,"+"));
+                }else {
+                    calc(subtract(string, indSubtract, "-"));
+                }
+            }else if(indSum != -1){
+                calc(sum(string, indSum,"+"));
+            }else if(indSubtract > 0){
+                calc(subtract(string, indSubtract, "-"));
+            }else{
+                System.out.println(string);
+            }
         }
-    }else {
-//        if(nS.length()>1){
-//
-//        }
     }
 
-//    for(int i = 0; i < ch.length; i++){
-//        System.out.println(ch[i]);
-//    }
-//    for(int i = 0; i < arr.length; i++){
-//        System.out.println(arr[i]);
-//    }
+    private String multiply (String string, int index, String prefix){
+        String[] values  = getValues(string, index);
+        String resCalc = executeMultiply(values[0], values[1]);
+        string = string.replace(values[0] + prefix + values[1], resCalc);
+        return string;
+    }
 
- }
+    private String split (String string, int index, String prefix){
+        String[] values  = getValues(string,index);
+        String resCalc = executeSplit(values[0], values[1]);
+        string = string.replace(values[0] + prefix + values[1], resCalc);
+        return string;
+    }
 
-     private void getPrevVal (String str, int indVal){
-            String elem;
-            int to = indVal;
-            int from = indVal;
-           String res = str.substring(--from,to);
-            System.out.print(res);
-         boolean i = true;
-           while(i){
-               if(res != "+" || res != "-" || res != "*" || res != "/" || from != -1){
-                res = str.substring(--from,--indVal);
-                System.out.print(res);
-               }else{
-                i = false;
-               }
-           }
+    private String sum (String string, int index, String prefix){
+        String[] values  = getValues(string,index);
+        String resCalc = executeSum(values[0], values[1]);
+        string = string.replace(values[0] + prefix + values[1], resCalc);
+        return string;
+    }
+    private String subtract (String string, int index, String prefix){
+        String[] values  = getValues(string,index);
+        String resCalc = executeSubtract(values[0], values[1]);
+        string = string.replace(values[0] + prefix + values[1], resCalc);
+        return string;
+    }
+
+    private String[] getValues(String string,int index){
+        String firstVal = string.substring(getPrevIndexes(string, index)[0], getPrevIndexes(string,index)[1]);
+        String secondVal = string.substring(getNextIndexes(string, index)[0], getNextIndexes(string,index)[1]);
+        return new String[] {firstVal,secondVal};
+    }
+
+     private int[] getPrevIndexes (String str, int indVal){
+        if(indVal != 0){
+             int to = indVal;
+             int from = indVal;
+             String res = str.substring(--from, to);
+             while(!res.equals("+") && !res.equals("-") && !res.equals("*") && !res.equals("/") && from != 0){
+                 res = str.substring(--from, --to);
+             }
+             if(from == 0){
+                 return new int[] {from,indVal};
+             }else{
+                return new int[] {++from,indVal};
+             }
+         }else{
+             return new int[] {indVal,++indVal};
+         }
      }
 
-    public Double sum (double a, double b){
-        double res = a + b;
-        return res;
+     private int[] getNextIndexes (String str, int indVal){
+         int to = 2 + indVal;
+         int from = indVal;
+         String res = str.substring(++from, to);
+         while(!res.equals("+") && !res.equals("-") && !res.equals("*") && !res.equals("/") && to != str.length()){
+             res = str.substring(++from, ++to);
+         }
+         if(to == str.length()){
+             return new int[] {++indVal, to};
+         }else{
+             return new int[] {++indVal, --to};
+         }
+     }
+
+    public String executeSum (String a, String b){
+        Double firstValue = Double.parseDouble(a);
+        Double secondValue = Double.parseDouble(b);
+        double result = firstValue + secondValue;
+        return Double.toString(result);
     }
 
-    public Double subtract (double a, double b){
-        double res = a - b;
-        return res;
+    public String executeSubtract (String a, String b){
+        Double firstValue = Double.parseDouble(a);
+        Double secondValue = Double.parseDouble(b);
+        double result = firstValue - secondValue;
+        return Double.toString(result);
     }
 
-    public Double multiply (double a, double b){
-        double res = a * b;
-        return res;
+    public String executeMultiply (String a, String b){
+        Double firstValue = Double.parseDouble(a);
+        Double secondValue = Double.parseDouble(b);
+        double result = firstValue * secondValue;
+        return Double.toString(result);
     }
 
-    public Double split (double a, double b){
-        double res = a / b;
-        return res;
+    public String executeSplit (String a, String b){
+        Double firstValue = Double.parseDouble(a);
+        Double secondValue = Double.parseDouble(b);
+        double result = firstValue / secondValue;
+        return Double.toString(result);
     }
 }
