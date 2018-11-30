@@ -1,34 +1,41 @@
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Calculation {
 
-    public void calc(String str){
+    public void calc(String str, int startInexOf){
         String string = str;
-        int indMultiply = string.indexOf("*");
-        int indSplit = string.indexOf("/");
-        int indSum = string.indexOf("+");
-        int indSubtract = string.indexOf("-");
+        int indMultiply = string.indexOf("*",startInexOf);
+        int indSplit = string.indexOf("/", startInexOf);
+        int indSum = string.indexOf("+", startInexOf);
+        int indSubtract = string.indexOf("-", startInexOf);
         if(indMultiply != -1 && indSplit != -1){
             if(indMultiply < indSplit){
-                calc(multiply(string, indMultiply,"*"));
+                calc(multiply(string, indMultiply,"*"),0);
             }else {
-                calc(split(string, indSplit,"/"));
+                calc(split(string, indSplit,"/"),0);
             }
         }else if(indMultiply != -1){
-            calc(multiply(string, indMultiply,"*"));
+            calc(multiply(string, indMultiply,"*"),0);
         }else if(indSplit != -1){
-            calc(split(string, indSplit,"/"));
+            calc(split(string, indSplit,"/"),0);
         }else{
-            if(indSum != -1 && indSubtract != -1){
+            if(indSum != -1 && (indSubtract != -1 && indSubtract > 0)){
                 if(indSum < indSubtract){
-                    calc(sum(string, indSum,"+"));
+                    calc(sum(string, indSum,"+"),0);
                 }else {
-                    calc(subtract(string, indSubtract, "-"));
+                    calc(subtract(string, indSubtract, "-"),0);
                 }
             }else if(indSum != -1){
-                calc(sum(string, indSum,"+"));
-            }else if(indSubtract > 0){
-                calc(subtract(string, indSubtract, "-"));
+                calc(sum(string, indSum,"+"),0);
+            }else if(indSubtract >= 0){
+                if(indSubtract == 0){
+                    calc(string,1);
+                }else{
+                    calc(subtract(string, indSubtract, "-"),0);
+
+                }
             }else{
                 System.out.println(string);
             }
@@ -73,8 +80,21 @@ public class Calculation {
              int to = indVal;
              int from = indVal;
              String res = str.substring(--from, to);
-             while(!res.equals("+") && !res.equals("-") && !res.equals("*") && !res.equals("/") && from != 0){
-                 res = str.substring(--from, --to);
+             Boolean checkMinusVal = false;
+             while(!res.equals("+") && !res.equals("*") && !res.equals("/") && from != 0){
+                 if(res.equals("-")){
+                     checkMinusVal = checkWithRegExp(str.substring(--from, --to));
+                     if(checkMinusVal){
+                        res = str.substring(from, to);
+                        break;
+                     }else{
+                         ++from;
+                         ++to;
+                         break;
+                     }
+                 }else{
+                     res = str.substring(--from, --to);
+                 }
              }
              if(from == 0){
                  return new int[] {from,indVal};
@@ -90,8 +110,13 @@ public class Calculation {
          int to = 2 + indVal;
          int from = indVal;
          String res = str.substring(++from, to);
-         while(!res.equals("+") && !res.equals("-") && !res.equals("*") && !res.equals("/") && to != str.length()){
+         if (res.equals("-")){
              res = str.substring(++from, ++to);
+         }
+         Boolean checkVal = checkWithRegExp(res);
+         while(!checkVal && to < str.length()){
+             res = str.substring(++from, ++to);
+             checkVal = checkWithRegExp(res);
          }
          if(to == str.length()){
              return new int[] {++indVal, to};
@@ -99,6 +124,12 @@ public class Calculation {
              return new int[] {++indVal, --to};
          }
      }
+
+    public static boolean checkWithRegExp(String userNameString){
+        Pattern p = Pattern.compile("[+,\\-,*,\\/]");//("^[a-z0-9_-]{3,15}$");
+        Matcher m = p.matcher(userNameString);
+        return m.matches();
+    }
 
     public String executeSum (String a, String b){
         Double firstValue = Double.parseDouble(a);

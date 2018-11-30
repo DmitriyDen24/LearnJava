@@ -4,7 +4,9 @@ public class Сalculator {
         String inputString = file.getInputString();
         if(inputString.length() > 0){
             Calculation check = new Calculation();
-            check.calc("5+9-16*2/4");
+            check.calc("-5+-9-16*-2/-4",0);
+            //Priority p = new Priority();
+            //p.test();
         }
 
     }
