@@ -1,15 +1,24 @@
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Calculation {
+    private static final Logger logger = LoggerFactory.getLogger(Calculation.class);
 
     public String сalculate(String str){
         int[] operIndexes = getIndexes(str);
-        while (operIndexes[0] > 0 || operIndexes[1] > 0 || operIndexes[2] >  0 || operIndexes[3] > 0){
-            str = processingCalc(str,operIndexes[0],operIndexes[1],operIndexes[2],operIndexes[3]);
-            operIndexes = getIndexes(str);
+        try {
+            while (operIndexes[0] > 0 || operIndexes[1] > 0 || operIndexes[2] >  0 || operIndexes[3] > 0){
+                str = processingCalc(str,operIndexes[0],operIndexes[1],operIndexes[2],operIndexes[3]);
+                operIndexes = getIndexes(str);
+            }
+            return str;
+        }catch (Exception ex){
+            logger.error("An error occurred during the calculation.",ex);
+           return "";
         }
-        return str;
+
     }
 
     private int[] getIndexes(String str){
@@ -81,47 +90,60 @@ public class Calculation {
     private String[] getValues(String str,int index){
         int[] prevIndexes = getPrevIndexes(str, index);
         int[] nextIndexes = getNextIndexes(str, index);
-        String firstVal = str.substring(prevIndexes[0], prevIndexes[1]);
-        String secondVal = str.substring(nextIndexes[0], nextIndexes[1]);
-        return new String[] {firstVal,secondVal};
+        if(prevIndexes.length > 0 && nextIndexes.length > 0){
+            String firstVal = str.substring(prevIndexes[0], prevIndexes[1]);
+            String secondVal = str.substring(nextIndexes[0], nextIndexes[1]);
+            return new String[] {firstVal,secondVal};
+        }
+        return new String[] {};
     }
 
     private int[] getPrevIndexes (String str, int indVal){
         int to = indVal;
         int from = indVal;
-        String res = str.substring(--from, to);
-        while(!res.equals("+") && !res.equals("*") && !res.equals("/") && from != 0){
-            if(res.equals("-")){
-                if(!checkWithRegExp(str.substring(--from, --to))){
-                    ++from;
-                    ++to;
+        try {
+            String res = str.substring(--from, to);
+            while(!res.equals("+") && !res.equals("*") && !res.equals("/") && from != 0){
+                if(res.equals("-")){
+                    if(!checkWithRegExp(str.substring(--from, --to))){
+                        ++from;
+                        ++to;
+                    }
+                    break;
+                }else{
+                    res = str.substring(--from, --to);
                 }
-                break;
-            }else{
-                res = str.substring(--from, --to);
             }
-        }
-        if(from == 0){
-            return new int[] {from,indVal};
-        }else{
-            return new int[] {++from,indVal};
+            if(from == 0){
+                return new int[] {from,indVal};
+            }else{
+                return new int[] {++from,indVal};
+            }
+        }catch (ArrayIndexOutOfBoundsException ex){
+            logger.error(ex.getMessage(),ex);
+            return new int[]{};
         }
     }
 
      private int[] getNextIndexes (String str, int indVal){
          int to = 2 + indVal;
          int from = indVal;
-         String res = str.substring(++from, to);
-         if (res.equals("-")){
-             res = str.substring(++from, ++to);
-         }
-         while(!checkWithRegExp(res) && to < str.length()){
-             res = str.substring(++from, ++to);
-         }
-         if(to == str.length()){
-             return new int[] {++indVal, to};
-         }else{
-             return new int[] {++indVal, --to};
+         try {
+             String res = str.substring(++from, to);
+             if (res.equals("-")){
+                 res = str.substring(++from, ++to);
+             }
+             while(!checkWithRegExp(res) && to < str.length()){
+                 res = str.substring(++from, ++to);
+             }
+             if(to == str.length()){
+                 return new int[] {++indVal, to};
+             }else{
+                 return new int[] {++indVal, --to};
+             }
+         }catch (ArrayIndexOutOfBoundsException ex){
+             logger.error(ex.getMessage(),ex);
+             return new int[]{};
          }
      }
 
