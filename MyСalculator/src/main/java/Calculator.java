@@ -1,4 +1,9 @@
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Calculator {
+    private static final Logger logger = LoggerFactory.getLogger(Calculator.class);
+
     public static void main(String[] str){
         WorkWithFiles file = new WorkWithFiles();
         String inputString = file.getInputString();
@@ -8,9 +13,10 @@ public class Calculator {
             if(cleanSrt.length()>0){
                 Calculation calcOperation = new Calculation();
                 String result = calcOperation.сalculate(cleanSrt);
-                file.writeFile(result);
-            }else{
-                System.out.print("Пример содержит ошибки!Подробности см. в лог файле!");
+                if(result.length()>0){
+                    logger.info("The calculation was successful!");
+                    file.writeFile(result);
+                }
             }
         }
 
