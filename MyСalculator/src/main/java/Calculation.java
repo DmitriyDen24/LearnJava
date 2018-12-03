@@ -15,7 +15,7 @@ public class Calculation {
             }
             return str;
         }catch (Exception ex){
-            logger.error("An error occurred during the calculation. Error: " + ex.getMessage());
+            logger.error("An error occurred during the calculation.",ex);
            return "";
         }
 
@@ -120,7 +120,7 @@ public class Calculation {
                 return new int[] {++from,indVal};
             }
         }catch (ArrayIndexOutOfBoundsException ex){
-            logger.error(ex.getMessage());
+            logger.error(ex.getMessage(),ex);
             return new int[]{};
         }
     }
@@ -142,7 +142,7 @@ public class Calculation {
                  return new int[] {++indVal, --to};
              }
          }catch (ArrayIndexOutOfBoundsException ex){
-             logger.error(ex.getMessage());
+             logger.error(ex.getMessage(),ex);
              return new int[]{};
          }
      }

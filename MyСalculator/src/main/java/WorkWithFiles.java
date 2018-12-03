@@ -21,7 +21,7 @@ public class WorkWithFiles {
             logger.info("String from file success getting!");
             return inputString;
         }catch (Exception ex){
-            logger.error("Read file failure! Error: "+ex.getMessage());
+            logger.error("Read file failure!", ex);
             return inputString;
         }
     }
@@ -36,7 +36,7 @@ public class WorkWithFiles {
             logger.info("Creation and writing to the file was successful!");
         }
         catch(IOException ex){
-            logger.error("An error occurred while creating and writing to the file! Error: "+ex.getMessage());
+            logger.error("An error occurred while creating and writing to the file!", ex);
         }
     }
 }
