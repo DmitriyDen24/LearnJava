@@ -9,7 +9,7 @@ public class WorkWithFiles {
     private static String inputString = "";
 
     public String getInputString (){
-        try (FileInputStream fin = new FileInputStream(pathToFile + "inputFile.txt")){
+        try (FileInputStream fin = new FileInputStream(pathToFile + "inputFile1.txt")){
             BufferedReader br = new BufferedReader(new InputStreamReader(fin));
             while ((inputString = br.readLine()) != null){
                 if(inputString.length() >= 3)
