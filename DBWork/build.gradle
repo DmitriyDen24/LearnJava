@@ -1,0 +1,24 @@
+group 'DBWork'
+version '1.0'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.jooq:jooq:3.11.7'
+    runtime 'com.h2database:h2:1.4.177'
+    testCompile 'junit:junit:4.11'
+}
+
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+}
