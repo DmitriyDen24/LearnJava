@@ -2,6 +2,9 @@ group 'DBWork'
 version '1.0'
 
 apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = 'Starter'
 
 sourceCompatibility = 1.8
 
