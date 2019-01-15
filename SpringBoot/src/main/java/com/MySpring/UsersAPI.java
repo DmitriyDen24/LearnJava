@@ -15,9 +15,16 @@ public class UsersAPI {
     @Autowired
     private Users users;
 
-    @RequestMapping("/user/get")
-    public Users getUser(@RequestParam(name="name", required=false, defaultValue="Unknown") String name) {
-        users.setName(name);
+    @RequestMapping(value="/user/getuser", method=RequestMethod.GET)
+    public Users getUser() {
+        users.getName();
         return users;
+    }
+
+    @RequestMapping(value="/user/setuser", method=RequestMethod.POST, consumes = "application/json")
+    public String setUser(@RequestBody Users p) {
+        users.setName(p.getName());
+        String res = "User successfully added!";
+        return res;
     }
 }
